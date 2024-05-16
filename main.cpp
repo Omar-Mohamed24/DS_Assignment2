@@ -17,9 +17,6 @@ private:
     int price;
 
 public:
-    // Default constructor
-    Item() : itemName(""), category(""), price(0) {}
-
     // Regular constructor
     Item(string itemName, string category, int price);
 
@@ -70,6 +67,7 @@ void Item::display(ostream &os) const
     os << "Item Name: " << itemName << "\n";
     os << "Category: " << category << "\n";
     os << "Price: " << price << "\n";
+    os << "\n";
 }
 
 void Item::display() const
@@ -113,6 +111,24 @@ private:
 public:
     BST() : root(NULL) {}
     BSTNode<T>* getroot() const {return root;}
+/////////////////////helperfunc////////////////////////////
+    void inOrder(BSTNode<T> *node, vector<T> &items) const
+    {
+        if (node == nullptr)
+            return;
+        inOrder(node->leftlink, items);
+        items.push_back(node->Key);
+        inOrder(node->rightlink, items);
+    }
+
+    void preOrder(BSTNode<T> *node, vector<T> &items) const
+    {
+        if (node == nullptr)
+            return;
+        items.push_back(node->Key);  // Visit the root node first
+        preOrder(node->leftlink, items);  // Then traverse the left subtree
+        preOrder(node->rightlink, items);  // Finally traverse the right subtree
+    }
 /////////////////////Search////////////////////////////////
     bool search(const T &el) const
     {
@@ -144,13 +160,9 @@ public:
     void insert(const T& insertItem)
     {
         BSTNode<T> *current;
-        BSTNode<T> *trailCurrent; 
+        BSTNode<T> *prev; 
         BSTNode<T> *newNode; 
-        newNode = new BSTNode<T>;
-        assert(newNode != NULL);
-        newNode->Key = insertItem;
-        newNode->leftlink = NULL;
-        newNode->rightlink = NULL;
+        newNode = new BSTNode<T>(insertItem);
         if (root == NULL)
             root = newNode;
         else
@@ -158,7 +170,7 @@ public:
             current = root;
             while (current != NULL)
             {
-                trailCurrent = current;
+                prev = current;
                 if (current->Key == insertItem)
                 {
                     cout << "The insert item is already in the list-";
@@ -171,33 +183,94 @@ public:
                 else
                     current = current->rightlink;
             }
-            if (trailCurrent->Key > insertItem)
-                trailCurrent->leftlink = newNode;
+            if (prev->Key > insertItem)
+                prev->leftlink = newNode;
             else
-                trailCurrent->rightlink = newNode;
+                prev->rightlink = newNode;
         }
     }
-///////////////////remove//////////////////////
+/////////////////////////remove////////////////////////////
 
-///////////////////Display//////////////////////
-    void inorder(BSTNode<T> *p) const
+/////////////////////////Display//////////////////////////
+    void Display() const
     {
-        if (p != NULL)
+        vector<T> items;
+        preOrder(root, items);
+        for (const auto &item : items)
         {
-        inorder(p->leftlink);
-        Item item = p->Key;
-        item.display();
-        inorder(p->rightlink);
+            item.display();
         }
     }
-///////////////////Display sorted by their name ascending//////////////////////
+///////////////////Display sorted by their name ascending////////////////////////
+    void displaySortedByNameascending() const
+    {
+        if (root == nullptr)
+        {
+            cout << "Tree is empty" << endl;
+            return;
+        }
 
-///////////////////Display sorted by their name descending//////////////////////
+        vector<T> items;
+        inOrder(root, items);
+        sort(items.begin(), items.end());
+        for (const auto &item : items)
+        {
+            item.display();
+        }
+    }
+///////////////////Display sorted by their name descending////////////////////////
+    void displaySortedByNamedescending() const
+    {
+        if (root == nullptr)
+        {
+            cout << "Tree is empty" << endl;
+            return;
+        }
 
-/////////////////// Display sorted by their prices ascending//////////////////////
+        vector<T> items;
+        inOrder(root, items);
+        sort(items.rbegin(), items.rend());
+        for (const auto &item : items)
+        {
+            item.display();
+        }
+    }
+///////////////////Display sorted by their prices ascending//////////////////////
+    void displaySortedByPriceascending() const
+    {
+        if (root == nullptr)
+        {
+            cout << "Tree is empty" << endl;
+            return;
+        }
 
+        vector<T> items;
+        inOrder(root, items);
+        sort(items.begin(), items.end(), [](const T &a, const T &b) { return a.get_price() < b.get_price(); });
+        
+        for (const auto &item : items)
+        {
+            item.display();
+        }
+    }
 ///////////////////Display sorted by their prices descending//////////////////////
+    void displaySortedByPricedescending() const
+    {
+        if (root == nullptr)
+        {
+            cout << "Tree is empty" << endl;
+            return;
+        }
 
+        vector<T> items;
+        inOrder(root, items);
+        sort(items.begin(), items.end(), [](const T &a, const T &b) { return a.get_price() > b.get_price(); });
+        
+        for (const auto &item : items)
+        {
+            item.display();
+        }
+    }
 };
 //---------------------------------------------------------AVL_Implementation--------------------------------------------------------
 
@@ -229,12 +302,12 @@ int main()
     ios::sync_with_stdio(false);
     cout.tie(nullptr);
     cin.tie(nullptr);
-    //BST<Item> binarySearchTree;
+    BST<Item> binarySearchTree;
 
     ifstream file("items.txt");
     if (file.is_open())
     {
-       // readItems(file,binarySearchTree);
+        readItems(file,binarySearchTree);
         file.close();
     }
     else
@@ -242,22 +315,8 @@ int main()
         cerr << "Error opening file!" << "\n";
     }
 
-
-    // Item itemToSearch ("milkk","dairy",13);
-    // if (binarySearchTree.search(itemToSearch))
-    // {
-    //     cout << "Item found: ";
-    //     itemToSearch.display();
-    //     cout << endl;
-    // }
-    // else
-    // {
-    //     cout << "Item not found: " << endl;
-    //     cout << endl;
-    // }
-
-    // Item itemToSearch ("milkk","daidfsy",143);
-    // binarySearchTree.insert(itemToSearch);
+    // Item itemToSearch0 ("milkk","daidfsy",143);
+    // binarySearchTree.insert(itemToSearch0);
 
     // Item itemToSearch1 ("omar","day",1343);
     // binarySearchTree.insert(itemToSearch1);
@@ -272,7 +331,23 @@ int main()
     // binarySearchTree.insert(itemToSearch4);
     
     // cout << "Items in sorted order:" << endl;
-    // binarySearchTree.inorder(binarySearchTree.getroot());
+    // binarySearchTree.Display();
+    // cout << endl;
+
+    // cout << "Items sorted by name ac:" << endl;
+    // binarySearchTree.displaySortedByNameascending();
+    // cout << endl;
+
+    // cout << "Items sorted by price ac:" << endl;
+    // binarySearchTree.displaySortedByPriceascending();
+    // cout << endl;
+
+    // cout << "Items sorted by name de:" << endl;
+    // binarySearchTree.displaySortedByNamedescending();
+    // cout << endl;
+
+    // cout << "Items sorted by price de:" << endl;
+    // binarySearchTree.displaySortedByPricedescending();
     // cout << endl;
 
     return 0;
