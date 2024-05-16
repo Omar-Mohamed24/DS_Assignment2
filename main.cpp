@@ -88,7 +88,66 @@ bool operator==(const Item &I1, const Item &I2)
     return I1.itemName == I2.itemName;
 }
 //---------------------------------------------------------BST_Implementation--------------------------------------------------------
+template <typename T>
+class BSTNode
+{
+private:
+    T Key;
+    BSTNode *left;
+    BSTNode *right;
 
+public:
+    BSTNode()
+    {
+        left = right = NULL;
+    }
+
+    BSTNode(const T &i, BSTNode *l = 0, BSTNode *r = 0)
+    {
+        Key = i;
+        left = l;
+        right = r;
+    }
+
+    BSTNode *getLeft() { return left; }
+    BSTNode *getRight() { return right; }
+    T getKey() { return Key; }
+};
+//                                        **************************************************
+template <typename T>
+class BST
+{
+private:
+    BSTNode<T> *root;
+
+public:
+    BST() : root(nullptr) {}
+    void clear() { root = 0; }
+    bool isEmpty() { return root == 0; }
+
+    T *search(T &el)
+    {
+        BSTNode<T> *p = root;
+        while (p != 0)
+        {
+            if (el == p->getKey())
+            {
+                return &p->getKey();
+            }
+            else if (el < p->getKey())
+            {
+                p = p->getLeft();
+            }
+            else
+            {
+                p = p->getRight();
+            }
+        }
+        return nullptr;
+    }
+
+    
+};
 //---------------------------------------------------------AVL_Implementation--------------------------------------------------------
 
 //---------------------------------------------------------Heaps_Implementation------------------------------------------------------
