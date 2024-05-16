@@ -77,18 +77,23 @@ void Item::display() const
 
 bool operator<(const Item &I1, const Item &I2)
 {
-    return I1.itemName < I2.itemName;
+    if (I1.itemName != I2.itemName)
+        return I1.itemName < I2.itemName;
+    if (I1.category != I2.category)
+        return I1.category < I2.category;
+    return I1.price < I2.price;
 }
 
 bool operator>(const Item &I1, const Item &I2)
 {
-    return I1.itemName > I2.itemName;
+    return I2 < I1; // Just swap the arguments and use the < operator
 }
 
 bool operator==(const Item &I1, const Item &I2)
 {
-    return I1.itemName == I2.itemName;
+    return I1.itemName == I2.itemName && I1.category == I2.category && I1.price == I2.price;
 }
+
 //---------------------------------------------------------BST_Implementation--------------------------------------------------------
 template <typename T>
 struct BSTNode
@@ -159,9 +164,7 @@ public:
 ////////////////////////// insert///////////////////////////
     void insert(const T& insertItem)
     {
-        BSTNode<T> *current;
-        BSTNode<T> *prev; 
-        BSTNode<T> *newNode; 
+        BSTNode<T> *current, *prev, *newNode; 
         newNode = new BSTNode<T>(insertItem);
         if (root == NULL)
             root = newNode;
@@ -178,19 +181,74 @@ public:
                     insertItem.display();
                     return;
                 }
-                else if (current->Key > insertItem)
+                else if (insertItem < current->Key)
                     current = current->leftlink;
                 else
                     current = current->rightlink;
             }
-            if (prev->Key > insertItem)
+            if (insertItem < prev->Key)
                 prev->leftlink = newNode;
             else
                 prev->rightlink = newNode;
         }
     }
 /////////////////////////remove////////////////////////////
+    void deleteNode (BSTNode<T>*& node,const T& deleteItem) 
+    {
+        BSTNode<T>* temp,*current,*prev;
+        if (node == NULL)
+            cerr << "Error: The node to be deleted is NULL." << endl;
 
+        if (deleteItem < node->Key)
+        {
+            deleteNode(node->leftlink, deleteItem);
+        }
+        else if (deleteItem > node->Key)
+        {
+            deleteNode(node->rightlink, deleteItem);
+        }
+        else
+        {
+            if(node->leftlink == NULL && node->rightlink == NULL)
+            {
+                node = nullptr;
+                delete node;
+            }
+            else if(node->leftlink == NULL)
+            {
+                temp = node;
+                node = node->rightlink;
+                delete temp;
+            }
+            else if(node->rightlink == NULL)
+            {
+                temp = node;
+                node = node->leftlink;
+                delete temp;
+            }
+            else
+            {
+                current = node->leftlink;
+                prev = NULL;
+                while (current->rightlink != NULL)
+                {
+                    prev = current;
+                    current = current->rightlink;
+                }
+                node->Key = current->Key;
+                if (prev == NULL) 
+                    node->leftlink = current->leftlink;
+                else
+                    prev->rightlink = current->leftlink;
+                delete current;
+            }
+        }    
+    }
+
+    void deleteitem(const T& deleteItem) 
+    {
+        deleteNode(root, deleteItem);
+    }
 /////////////////////////Display//////////////////////////
     void Display() const
     {
@@ -337,6 +395,13 @@ int main()
     // cout << "Items sorted by name ac:" << endl;
     // binarySearchTree.displaySortedByNameascending();
     // cout << endl;
+
+    // Item itemToSearch0 ("apples","fruit",66);
+    // binarySearchTree.deleteitem(itemToSearch0);
+    // Item itemToSearch1 ("water","drink",9);
+    // binarySearchTree.deleteitem(itemToSearch1);
+    // Item itemToSearch2 ("mint gum","candy",2);
+    // binarySearchTree.deleteitem(itemToSearch2);
 
     // cout << "Items sorted by price ac:" << endl;
     // binarySearchTree.displaySortedByPriceascending();
