@@ -104,9 +104,9 @@ struct BSTNode
 
     BSTNode() : leftlink(nullptr), rightlink(nullptr) {}
 
-    BSTNode(const T& key) : Key(key), leftlink(nullptr), rightlink(nullptr) {}
+    BSTNode(const T &key) : Key(key), leftlink(nullptr), rightlink(nullptr) {}
 };
-//************************************************************************
+//*********************************************************************************
 template <typename T>
 class BST
 {
@@ -115,7 +115,7 @@ private:
 
 public:
     BST() : root(NULL) {}
-    BSTNode<T>* getroot() const {return root;}
+    BSTNode<T> *getroot() const { return root; }
 /////////////////////helperfunc////////////////////////////
     void inOrder(BSTNode<T> *node, vector<T> &items) const
     {
@@ -130,41 +130,14 @@ public:
     {
         if (node == nullptr)
             return;
-        items.push_back(node->Key);  // Visit the root node first
+        items.push_back(node->Key);       // Visit the root node first
         preOrder(node->leftlink, items);  // Then traverse the left subtree
-        preOrder(node->rightlink, items);  // Finally traverse the right subtree
-    }
-/////////////////////Search////////////////////////////////
-    bool search(const T &el) const
-    {
-        bool found = false;
-        if (root == NULL)
-            cout << "Cannot search the empty tree." << "\n";
-        else
-        {
-            BSTNode<T> *p = root;
-            while (p != NULL && !found)
-            {
-                if (el == p->Key)
-                {
-                    found = true;
-                }
-                else if (el < p->Key)
-                {
-                    p = p->leftlink;
-                }
-                else
-                {
-                    p = p->rightlink;
-                }
-            }
-        }
-        return found;
+        preOrder(node->rightlink, items); // Finally traverse the right subtree
     }
 ////////////////////////// insert///////////////////////////
-    void insert(const T& insertItem)
+    void insert(const T &insertItem)
     {
-        BSTNode<T> *current, *prev, *newNode; 
+        BSTNode<T> *current, *prev, *newNode;
         newNode = new BSTNode<T>(insertItem);
         if (root == NULL)
             root = newNode;
@@ -192,10 +165,10 @@ public:
                 prev->rightlink = newNode;
         }
     }
-/////////////////////////remove////////////////////////////
-    void deleteNode (BSTNode<T>*& node,const T& deleteItem) 
+/////////////////////////remove////////////////////////////////////////
+    void deleteNode(BSTNode<T> *&node, const T &deleteItem)
     {
-        BSTNode<T>* temp,*current,*prev;
+        BSTNode<T> *temp, *current, *prev;
         if (node == NULL)
             cerr << "Error: The node to be deleted is NULL." << endl;
 
@@ -209,18 +182,18 @@ public:
         }
         else
         {
-            if(node->leftlink == NULL && node->rightlink == NULL)
+            if (node->leftlink == NULL && node->rightlink == NULL)
             {
                 node = nullptr;
                 delete node;
             }
-            else if(node->leftlink == NULL)
+            else if (node->leftlink == NULL)
             {
                 temp = node;
                 node = node->rightlink;
                 delete temp;
             }
-            else if(node->rightlink == NULL)
+            else if (node->rightlink == NULL)
             {
                 temp = node;
                 node = node->leftlink;
@@ -236,16 +209,16 @@ public:
                     current = current->rightlink;
                 }
                 node->Key = current->Key;
-                if (prev == NULL) 
+                if (prev == NULL)
                     node->leftlink = current->leftlink;
                 else
                     prev->rightlink = current->leftlink;
                 delete current;
             }
-        }    
+        }
     }
 
-    void deleteitem(const T& deleteItem) 
+    void deleteitem(const T &deleteItem)
     {
         deleteNode(root, deleteItem);
     }
@@ -304,8 +277,9 @@ public:
 
         vector<T> items;
         inOrder(root, items);
-        sort(items.begin(), items.end(), [](const T &a, const T &b) { return a.get_price() < b.get_price(); });
-        
+        sort(items.begin(), items.end(), [](const T &a, const T &b)
+             { return a.get_price() < b.get_price(); });
+
         for (const auto &item : items)
         {
             item.display();
@@ -322,8 +296,9 @@ public:
 
         vector<T> items;
         inOrder(root, items);
-        sort(items.begin(), items.end(), [](const T &a, const T &b) { return a.get_price() > b.get_price(); });
-        
+        sort(items.begin(), items.end(), [](const T &a, const T &b)
+             { return a.get_price() > b.get_price(); });
+
         for (const auto &item : items)
         {
             item.display();
@@ -331,7 +306,406 @@ public:
     }
 };
 //---------------------------------------------------------AVL_Implementation--------------------------------------------------------
+template <class elemType>
+struct AVLNode
+{
+    elemType info;
+    int bfactor; // balance factor
+    AVLNode<elemType> *llink;
+    AVLNode<elemType> *rlink;
+    AVLNode() : info(Item("", "", 0)), bfactor(1), llink(nullptr), rlink(nullptr) {}
+    AVLNode(const elemType &info) : info(info), bfactor(1), llink(nullptr), rlink(nullptr) {}
+};
+//**********************************************************************************
+template <typename elemType>
+class AVL
+{
+private:
+    AVLNode<elemType> *root;
 
+public:
+    AVL() : root(NULL) {}
+
+    AVLNode<elemType> *getroot() const { return root; }
+/////////////////////helperfunc//////////////////////////////////////////////////
+    void inOrder(AVLNode<elemType> *node, vector<elemType> &items) const
+    {
+        if (node == nullptr)
+            return;
+        inOrder(node->llink, items);
+        items.push_back(node->info);
+        inOrder(node->rlink, items);
+    }
+
+    void preOrder(AVLNode<elemType> *node, vector<elemType> &items) const
+    {
+        if (node == nullptr)
+            return;
+        items.push_back(node->info);
+        preOrder(node->llink, items);
+        preOrder(node->rlink, items);
+    }
+
+    void rotateToLeft(AVLNode<elemType>* &root)
+    {
+        AVLNode<elemType> *p; 
+        if (root == NULL)
+            cerr << "Error in the tree" << endl;
+        else if (root->rlink == NULL)
+            cerr << "Error in the tree:"
+                <<" No right subtree to rotate." << endl;
+        else
+        {
+            p = root->rlink;
+            root->rlink = p->llink; 
+            p->llink = root;
+            root = p; 
+        }
+    }
+
+    void rotateToRight(AVLNode<elemType>* &root)
+    {
+        AVLNode<elemType> *p;
+        if (root == NULL)
+            cerr << "Error in the tree" << endl;
+        else if (root->llink == NULL)
+            cerr << "Error in the tree:"
+            << " No left subtree to rotate." << endl;
+        else
+        {
+            p = root->llink;
+            root->llink = p->rlink;
+            p->rlink = root;
+            root = p; 
+        }
+    }
+
+    void balanceFromLeft(AVLNode<elemType>* &root)
+    {
+        AVLNode<elemType> *p;
+        AVLNode<elemType> *w;
+        p = root->llink; //p points to the left subtree of root
+        switch (p->bfactor)
+        {
+            case -1:
+                root->bfactor = 0;
+                p->bfactor = 0;
+                rotateToRight(root);
+                break;
+            case 0:
+                cerr << "Error: Cannot balance from the left." << endl;
+                break;
+            case 1:
+                w = p->rlink;
+                switch (w->bfactor) 
+                {
+                    case -1:
+                        root->bfactor = 1;
+                        p->bfactor = 0;
+                        break;
+                    case 0:
+                        root->bfactor = 0;
+                        p->bfactor = 0;
+                        break;
+                    case 1:
+                        root->bfactor = 0;
+                        p->bfactor = -1;
+                }
+                w->bfactor = 0;
+                rotateToLeft(p);
+                root->llink = p;
+                rotateToRight(root);
+        }
+    }
+
+    void balanceFromRight(AVLNode<elemType>* &root)
+    {
+        AVLNode<elemType> *p;
+        AVLNode<elemType> *w;
+        p = root->rlink; 
+        switch (p->bfactor)
+        {
+            case -1:
+                w = p->llink;
+                switch (w->bfactor)
+                {
+                case -1:
+                    root->bfactor = 0;
+                    p->bfactor = 1;
+                    break;
+                case 0:
+                    root->bfactor = 0;
+                    p->bfactor = 0;
+                    break;
+                case 1:
+                    root->bfactor = -1;
+                    p->bfactor = 0;
+                }
+                w->bfactor = 0;
+                rotateToRight(p);
+                root->rlink = p;
+                rotateToLeft(root);
+                break;
+            case 0:
+                cerr << "Error: Cannot balance from the left." << endl;
+                break;
+            case 1:
+                root->bfactor = 0;
+                p->bfactor = 0;
+                rotateToLeft(root);
+        }
+    }
+////////////////////////// insert/////////////////////////////////////////////////
+    void insertIntoAVL(AVLNode<elemType>* &root,AVLNode<elemType> *newNode, bool& isTaller)
+    {
+        if (root == NULL)
+        {
+            root = newNode;
+            isTaller = true;
+        }
+        else if (root->info == newNode->info)
+            cerr << "No duplicates are allowed." << endl;
+        else if (root->info > newNode->info)
+        {
+            insertIntoAVL(root->llink, newNode, isTaller);
+            if (isTaller)
+                switch (root->bfactor)
+                {
+                    case -1:
+                        balanceFromLeft(root);
+                        isTaller = false;
+                        break;
+                    case 0:
+                        root->bfactor = -1;
+                        isTaller = true;
+                        break;
+                    case 1:
+                        root->bfactor = 0;
+                        isTaller = false;
+                }
+        }
+        else
+        {
+            insertIntoAVL(root->rlink, newNode, isTaller);
+            if (isTaller)
+                switch (root->bfactor)
+                {
+                    case -1:
+                        root->bfactor = 0;
+                        isTaller = false;
+                        break;
+                    case 0:
+                        root->bfactor = 1;
+                        isTaller = true;
+                        break;
+                    case 1:
+                        balanceFromRight(root);
+                        isTaller = false;
+                }
+        }
+    }
+
+    void insert(const elemType &newItem)
+    {
+        bool isTaller = false;
+        AVLNode<elemType> *newNode;
+        newNode = new AVLNode<elemType>;
+        
+        newNode->info = newItem;
+        newNode->bfactor = 0;
+        newNode->llink = NULL;
+        newNode->rlink = NULL;
+        insertIntoAVL(root, newNode, isTaller);
+    }
+/////////////////////////remove///////////////////////////////////////////////////
+    void deleteNode(AVLNode<elemType> *&root, const elemType &key, bool &isShorter)
+    {
+        if (root == nullptr)
+        {
+            isShorter = false;
+            return;
+        }
+
+        if (key < root->info)
+        {
+            deleteNode(root->llink, key, isShorter);
+            if (isShorter)
+            {
+                switch (root->bfactor)
+                {
+                    case -1:
+                        root->bfactor = 0;
+                        isShorter = true;
+                        break;
+                    case 0:
+                        root->bfactor = 1;
+                        isShorter = false;
+                        break;
+                    case 1:
+                        balanceFromRight(root);
+                        isShorter = (root->bfactor == 0);
+                        break;
+                }
+            }
+        }
+        else if (key > root->info)
+        {
+            deleteNode(root->rlink, key, isShorter);
+            if (isShorter)
+            {
+                switch (root->bfactor)
+                {
+                    case 1:
+                        root->bfactor = 0;
+                        isShorter = true;
+                        break;
+                    case 0:
+                        root->bfactor = -1;
+                        isShorter = false;
+                        break;
+                    case -1:
+                        balanceFromLeft(root);
+                        isShorter = (root->bfactor == 0);
+                        break;
+                }
+            }
+        }
+        else
+        {
+            if ((root->llink == nullptr) || (root->rlink == nullptr))
+            {
+                AVLNode<elemType> *temp = root->llink ? root->llink : root->rlink;
+
+                if (temp == nullptr)
+                {
+                    temp = root;
+                    root = nullptr;
+                }
+                else
+                    *root = *temp;
+
+                delete temp;
+                isShorter = true;
+            }
+            else
+            {
+                AVLNode<elemType> *current = root->rlink;
+                while (current->llink != nullptr)
+                    current = current->llink;
+
+                root->info = current->info;
+                deleteNode(root->rlink, current->info, isShorter);
+
+                if (isShorter)
+                {
+                    switch (root->bfactor)
+                    {
+                        case 1:
+                            root->bfactor = 0;
+                            isShorter = true;
+                            break;
+                        case 0:
+                            root->bfactor = -1;
+                            isShorter = false;
+                            break;
+                        case -1:
+                            balanceFromLeft(root);
+                            isShorter = (root->bfactor == 0);
+                            break;
+                    }
+                }
+            }
+        }
+    }
+
+    void deleteitem(const elemType &deleteItem)
+    {
+        bool isShorter = false;
+        deleteNode(root, deleteItem, isShorter);
+    }
+/////////////////////////Display//////////////////////////////////////////////////
+    void Display() const
+    {
+        vector<elemType> items;
+        preOrder(root, items);
+        for (const auto &item : items)
+        {
+            item.display();
+        }
+    }
+///////////////////Display sorted by their name ascending/////////////////////////
+    void displaySortedByNameascending() const
+    {
+        if (root == nullptr)
+        {
+            cout << "Tree is empty" << endl;
+            return;
+        }
+
+        vector<elemType> items;
+        inOrder(root, items);
+        sort(items.begin(), items.end());
+        for (const auto &item : items)
+        {
+            item.display();
+        }
+    }
+///////////////////Display sorted by their name descending////////////////////////
+    void displaySortedByNamedescending() const
+    {
+        if (root == nullptr)
+        {
+            cout << "Tree is empty" << endl;
+            return;
+        }
+
+        vector<elemType> items;
+        inOrder(root, items);
+        sort(items.rbegin(), items.rend());
+        for (const auto &item : items)
+        {
+            item.display();
+        }
+    }
+///////////////////Display sorted by their prices ascending///////////////////////
+    void displaySortedByPriceascending() const
+    {
+        if (root == nullptr)
+        {
+            cout << "Tree is empty" << endl;
+            return;
+        }
+
+        vector<elemType> items;
+        inOrder(root, items);
+        sort(items.begin(), items.end(), [](const elemType &a, const elemType &b)
+             { return a.get_price() < b.get_price(); });
+
+        for (const auto &item : items)
+        {
+            item.display();
+        }
+    }
+///////////////////Display sorted by their prices descending//////////////////////
+    void displaySortedByPricedescending() const
+    {
+        if (root == nullptr)
+        {
+            cout << "Tree is empty" << endl;
+            return;
+        }
+
+        vector<elemType> items;
+        inOrder(root, items);
+        sort(items.begin(), items.end(), [](const elemType &a, const elemType &b)
+             { return a.get_price() > b.get_price(); });
+
+        for (const auto &item : items)
+        {
+            item.display();
+        }
+    }
+};
 //---------------------------------------------------------Heaps_Implementation------------------------------------------------------
 
 //-----------------------------------------------------------mainfunctions-----------------------------------------------------------
@@ -361,20 +735,25 @@ int main()
     cout.tie(nullptr);
     cin.tie(nullptr);
     BST<Item> binarySearchTree;
+    AVL<Item> avltree;
 
     ifstream file("items.txt");
     if (file.is_open())
     {
-        readItems(file,binarySearchTree);
+        readItems(file, avltree);
+        // readItems(file, binarySearchTree);
+        
         file.close();
     }
     else
     {
         cerr << "Error opening file!" << "\n";
     }
-
+////////////////////////////////////////////////////////Test_BST///////////////////////////////////////////
     // Item itemToSearch0 ("milkk","daidfsy",143);
     // binarySearchTree.insert(itemToSearch0);
+    // binarySearchTree.deleteitem(itemToSearch0);
+    
 
     // Item itemToSearch1 ("omar","day",1343);
     // binarySearchTree.insert(itemToSearch1);
@@ -382,19 +761,11 @@ int main()
     // Item itemToSearch2 ("ADADSFS","dadasdiry",13323);
     // binarySearchTree.insert(itemToSearch2);
 
-    // Item itemToSearch3 ("pepsi","drink",13);
-    // binarySearchTree.insert(itemToSearch3);
+    // Item itemToSearch3 ("pepsi","drink",20);
+    // binarySearchTree.deleteitem(itemToSearch3);
 
-    // Item itemToSearch4 ("A7A","candy",2);
+    // Item itemToSearch4 ("fdgdg","candy",2);
     // binarySearchTree.insert(itemToSearch4);
-    
-    // cout << "Items in sorted order:" << endl;
-    // binarySearchTree.Display();
-    // cout << endl;
-
-    // cout << "Items sorted by name ac:" << endl;
-    // binarySearchTree.displaySortedByNameascending();
-    // cout << endl;
 
     // Item itemToSearch0 ("apples","fruit",66);
     // binarySearchTree.deleteitem(itemToSearch0);
@@ -402,6 +773,14 @@ int main()
     // binarySearchTree.deleteitem(itemToSearch1);
     // Item itemToSearch2 ("mint gum","candy",2);
     // binarySearchTree.deleteitem(itemToSearch2);
+
+    // cout << "Items in sorted order:" << endl;
+    // binarySearchTree.Display();
+    // cout << endl;
+
+    // cout << "Items sorted by name ac:" << endl;
+    // binarySearchTree.displaySortedByNameascending();
+    // cout << endl;
 
     // cout << "Items sorted by price ac:" << endl;
     // binarySearchTree.displaySortedByPriceascending();
@@ -414,6 +793,48 @@ int main()
     // cout << "Items sorted by price de:" << endl;
     // binarySearchTree.displaySortedByPricedescending();
     // cout << endl;
+
+////////////////////////////////////////////////////////Test_AVL///////////////////////////////////////////
+    // Item itemToSearch5 ("milkk","daidfsy",143);
+    // Item itemToSearch6 ("mint gum","candy",2);
+    // Item itemToSearch1 ("omar","day",1343);
+    // Item itemToSearch2 ("ADADSFS","dadasdiry",13323);
+    // Item itemToSearch3 ("pepsi","drink",13);
+    // Item itemToSearch4 ("wfdsdf","candy",2);
+    // Item itemToSearch0 ("apples","fruit",66);
+    // Item itemToSearch6 ("waterr","drink",9);
+
+    // avltree.insert(itemToSearch5);
+    // avltree.insert(itemToSearch1);
+    // avltree.insert(itemToSearch2);
+    // avltree.insert(itemToSearch3);
+    // avltree.insert(itemToSearch4);
+    // avltree.deleteitem(itemToSearch0);
+    // avltree.deleteitem(itemToSearch6);
+    // avltree.deleteitem(itemToSearch6);
+    // avltree.search(itemToSearch0);
+
+    // cout << "Items in sorted order:" << endl;
+    // avltree.Display();
+    // cout << endl;
+
+    // cout << "Items sorted by name ac:" << endl;
+    // avltree.displaySortedByNameascending();
+    // cout << endl;
+
+    // cout << "Items sorted by price ac:" << endl;
+    // avltree.displaySortedByPriceascending();
+    // cout << endl;
+
+    // cout << "Items sorted by name de:" << endl;
+    // avltree.displaySortedByNamedescending();
+    // cout << endl;
+
+    // cout << "Items sorted by price de:" << endl;
+    // avltree.displaySortedByPricedescending();
+    // cout << endl;
+////////////////////////////////////////////////////////Test_Heap///////////////////////////////////////////
+        
 
     return 0;
 }
