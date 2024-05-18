@@ -313,8 +313,8 @@ struct AVLNode
     int bfactor; // balance factor
     AVLNode<elemType> *llink;
     AVLNode<elemType> *rlink;
-    AVLNode() : info(Item("", "", 0)), bfactor(1), llink(nullptr), rlink(nullptr) {}
-    AVLNode(const elemType &info) : info(info), bfactor(1), llink(nullptr), rlink(nullptr) {}
+    AVLNode() : info(elemType()), bfactor(0), llink(nullptr), rlink(nullptr) {}
+    AVLNode(const elemType &info) : info(info), bfactor(0), llink(nullptr), rlink(nullptr) {}
 };
 //**********************************************************************************
 template <typename elemType>
@@ -509,12 +509,8 @@ public:
     {
         bool isTaller = false;
         AVLNode<elemType> *newNode;
-        newNode = new AVLNode<elemType>;
+        newNode = new AVLNode<elemType>(newItem);
         
-        newNode->info = newItem;
-        newNode->bfactor = 0;
-        newNode->llink = NULL;
-        newNode->rlink = NULL;
         insertIntoAVL(root, newNode, isTaller);
     }
 /////////////////////////remove///////////////////////////////////////////////////
@@ -734,13 +730,13 @@ int main()
     ios::sync_with_stdio(false);
     cout.tie(nullptr);
     cin.tie(nullptr);
-    BST<Item> binarySearchTree;
-    AVL<Item> avltree;
+    // BST<Item> binarySearchTree;
+    // AVL<Item> avltree;
 
     ifstream file("items.txt");
     if (file.is_open())
     {
-        readItems(file, avltree);
+        // readItems(file, avltree);
         // readItems(file, binarySearchTree);
         
         file.close();
@@ -811,8 +807,7 @@ int main()
     // avltree.insert(itemToSearch4);
     // avltree.deleteitem(itemToSearch0);
     // avltree.deleteitem(itemToSearch6);
-    // avltree.deleteitem(itemToSearch6);
-    // avltree.search(itemToSearch0);
+    // avltree.deleteitem(itemToSearch4);
 
     // cout << "Items in sorted order:" << endl;
     // avltree.Display();
