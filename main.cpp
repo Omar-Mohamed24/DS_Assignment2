@@ -600,98 +600,104 @@ template <typename elemType>
 class MaxHeap
 {
 private:
-    vector <elemType> heap;
-public:    
+    vector<elemType> heap;
+
+public:
     MaxHeap() {}
 
     void heapify()
     {
         int size = heap.size();
-        for(int i = size / 2 - 1; i >= 0; i--)
+        for (int i = size / 2 - 1; i >= 0; i--)
         {
             int lchild = 2 * i + 1;
             int rchild = 2 * i + 2;
             int parent = i;
 
-            if(lchild < size &&  heap[lchild] > heap[parent])
+            if (lchild < size && heap[lchild] > heap[parent])
             {
                 parent = lchild;
             }
 
-            if(rchild < size && heap[rchild] > heap[parent])
+            if (rchild < size && heap[rchild] > heap[parent])
             {
                 parent = rchild;
             }
 
-            if(parent != i)
-            {
-                swap(heap[i], heap[parent]);
-            }
-        } 
-    }
-
-    void heapifyByPrice()
-    {
-        int size = heap.size();
-        for(int i = size / 2 - 1; i >= 0; i--)
-        {
-            int lchild = 2 * i + 1;
-            int rchild = 2 * i + 2;
-            int parent = i;
-
-            if(lchild < size &&  compareByPrice(heap[lchild],heap[parent]))
-            {
-                parent = lchild;
-            }
-
-            if(rchild < size && compareByPrice(heap[rchild],heap[parent]))
-            {
-                parent = rchild;
-            }
-
-            if(parent != i)
+            if (parent != i)
             {
                 swap(heap[i], heap[parent]);
             }
         }
     }
 
-    vector <elemType> getHeap()
+    void heapifyByPrice()
+    {
+        int size = heap.size();
+        for (int i = size / 2 - 1; i >= 0; i--)
+        {
+            int lchild = 2 * i + 1;
+            int rchild = 2 * i + 2;
+            int parent = i;
+
+            if (lchild < size && compareByPrice(heap[lchild], heap[parent]))
+            {
+                parent = lchild;
+            }
+
+            if (rchild < size && compareByPrice(heap[rchild], heap[parent]))
+            {
+                parent = rchild;
+            }
+
+            if (parent != i)
+            {
+                swap(heap[i], heap[parent]);
+            }
+        }
+    }
+
+    vector<elemType> getHeap()
     {
         return heap;
     }
 
-    void setHeap(const vector<elemType>& items)
+    void setHeap(const vector<elemType> &items)
     {
         heap = items;
         heapify();
     }
 
-    void insert (const elemType& item)
+    void insert(const elemType &item)
     {
         heap.push_back(item);
         heapify();
     }
 
-    void deleteItem (const elemType& item)
+    void deleteItem(const elemType &item)
     {
         auto del = find(heap.begin(), heap.end(), item);
-        if(del == heap.end()) {cout << "Element Not Found in Heap." << endl; return; }
-        else 
+        if (del == heap.end())
+        {
+            cout << "Element Not Found in Heap." << endl;
+            return;
+        }
+        else
         {
             auto index = distance(heap.begin(), del);
             swap(heap[index], heap.back());
             heap.pop_back();
             heapify();
-        } 
+        }
     }
 
     void display() const
     {
-        if(heap.size() == 0) cout << "Empty Heap" << endl;
-        else 
+        if (heap.size() == 0)
+            cout << "Empty Heap" << endl;
+        else
         {
-            for(const auto& item : heap)
+            for (const auto &item : heap)
             {
                 item.display();
             }
@@ -704,98 +710,104 @@ template <typename elemType>
 class MinHeap
 {
 private:
-    vector <elemType> heap;
-public:    
+    vector<elemType> heap;
+
+public:
     MinHeap() {}
 
     void heapify()
     {
         int size = heap.size();
-        for(int i = size / 2 - 1; i >= 0; i--)
+        for (int i = size / 2 - 1; i >= 0; i--)
         {
             int lchild = 2 * i + 1;
             int rchild = 2 * i + 2;
             int parent = i;
 
-            if(lchild < size &&  heap[lchild] < heap[parent])
+            if (lchild < size && heap[lchild] < heap[parent])
             {
                 parent = lchild;
             }
 
-            if(rchild < size && heap[rchild] < heap[parent])
+            if (rchild < size && heap[rchild] < heap[parent])
             {
                 parent = rchild;
             }
 
-            if(parent != i)
-            {
-                swap(heap[i], heap[parent]);
-            }
-        } 
-    }
-
-    void heapifyByPrice()
-    {
-        int size = heap.size();
-        for(int i = size / 2 - 1; i >= 0; i--)
-        {
-            int lchild = 2 * i + 1;
-            int rchild = 2 * i + 2;
-            int parent = i;
-
-            if(lchild < size &&  !compareByPrice(heap[lchild],heap[parent]))
-            {
-                parent = lchild;
-            }
-
-            if(rchild < size && !compareByPrice(heap[rchild],heap[parent]))
-            {
-                parent = rchild;
-            }
-
-            if(parent != i)
+            if (parent != i)
             {
                 swap(heap[i], heap[parent]);
             }
         }
     }
 
-    vector <elemType> getHeap()
+    void heapifyByPrice()
+    {
+        int size = heap.size();
+        for (int i = size / 2 - 1; i >= 0; i--)
+        {
+            int lchild = 2 * i + 1;
+            int rchild = 2 * i + 2;
+            int parent = i;
+
+            if (lchild < size && !compareByPrice(heap[lchild], heap[parent]))
+            {
+                parent = lchild;
+            }
+
+            if (rchild < size && !compareByPrice(heap[rchild], heap[parent]))
+            {
+                parent = rchild;
+            }
+
+            if (parent != i)
+            {
+                swap(heap[i], heap[parent]);
+            }
+        }
+    }
+
+    vector<elemType> getHeap()
     {
         return heap;
-    }    
+    }
 
-    void setHeap(const vector<elemType>& items)
+    void setHeap(const vector<elemType> &items)
     {
         heap = items;
         heapify();
     }
 
-    void insert (const elemType& item)
+    void insert(const elemType &item)
     {
         heap.push_back(item);
         heapify();
     }
 
-    void deleteItem (const elemType& item)
+    void deleteItem(const elemType &item)
     {
         auto del = find(heap.begin(), heap.end(), item);
-        if(del == heap.end()) {cout << "Element Not Found in Heap." << endl; return; }
-        else 
+        if (del == heap.end())
+        {
+            cout << "Element Not Found in Heap." << endl;
+            return;
+        }
+        else
         {
             auto index = distance(heap.begin(), del);
             swap(heap[index], heap.back());
             heap.pop_back();
             heapify();
-        } 
+        }
     }
 
     void display() const
     {
-        if(heap.size() == 0) cout << "Empty Heap" << endl;
-        else 
+        if (heap.size() == 0)
+            cout << "Empty Heap" << endl;
+        else
         {
-            for(const auto& item : heap)
+            for (const auto &item : heap)
             {
                 item.display();
             }
@@ -808,41 +820,45 @@ template <typename elemType>
 class Heap
 {
 private:
-    vector <elemType> items;
-    MaxHeap <elemType> maxHeap;
-    MinHeap <elemType> minHeap;
-public:
+    vector<elemType> items;
+    MaxHeap<elemType> maxHeap;
+    MinHeap<elemType> minHeap;
 
+public:
     Heap() {}
 
-
-    void insert (const elemType& item)
+    void insert(const elemType &item)
     {
         items.push_back(item);
         maxHeap.insert(item);
         minHeap.insert(item);
     }
 
-    void deleteItem (const elemType& item)
+    void deleteItem(const elemType &item)
     {
         auto del = find(items.begin(), items.end(), item);
-        if(del == items.end()) {cout << "Element Not Found in Heap." << endl; return; }
-        else 
+        if (del == items.end())
         {
-            auto index = distance(items.begin(), del);    
+            cout << "Element Not Found in Heap." << endl;
+            return;
+        }
+        else
+        {
+            auto index = distance(items.begin(), del);
 
             items.erase(del);
             maxHeap.deleteItem(item);
             minHeap.deleteItem(item);
-        } 
+        }
     }
 
     void display() const
     {
-        if(items.size() == 0) cout << "Empty Heap" << endl;
-        else 
+        if (items.size() == 0)
+            cout << "Empty Heap" << endl;
+        else
         {
-            for(const auto& item : items)
+            for (const auto &item : items)
             {
                 item.display();
             }
@@ -850,23 +866,23 @@ public:
         }
     }
 
-    vector <elemType> HeapSort(bool ASC, bool ByPrice)
+    vector<elemType> HeapSort(bool ASC, bool ByPrice)
     {
-        if(!ByPrice)
+        if (!ByPrice)
         {
-            vector <elemType> SortedItems;
-            if(!ASC)
+            vector<elemType> SortedItems;
+            if (!ASC)
             {
-                MaxHeap <elemType> tempMaxHeap;
+                MaxHeap<elemType> tempMaxHeap;
                 tempMaxHeap.setHeap(maxHeap.getHeap());
-                
-                while(!tempMaxHeap.getHeap().empty())
+
+                while (!tempMaxHeap.getHeap().empty())
                 {
                     SortedItems.push_back(tempMaxHeap.getHeap()[0]);
                     tempMaxHeap.deleteItem(tempMaxHeap.getHeap()[0]);
                 }
             }
-            else 
+            else
             {
                 MinHeap<elemType> tempMinHeap;
                 tempMinHeap.setHeap(minHeap.getHeap());
@@ -876,27 +892,27 @@ public:
                     SortedItems.push_back(tempMinHeap.getHeap()[0]);
                     tempMinHeap.deleteItem(tempMinHeap.getHeap()[0]);
                 }
-            } 
+            }
 
             return SortedItems;
         }
-        else 
+        else
         {
-            vector <elemType> SortedItems;
-            if(!ASC)
+            vector<elemType> SortedItems;
+            if (!ASC)
             {
-                MaxHeap <elemType> tempMaxHeap;
+                MaxHeap<elemType> tempMaxHeap;
                 tempMaxHeap.setHeap(maxHeap.getHeap());
                 tempMaxHeap.heapifyByPrice();
-                
-                while(!tempMaxHeap.getHeap().empty())
+
+                while (!tempMaxHeap.getHeap().empty())
                 {
                     SortedItems.push_back(tempMaxHeap.getHeap()[0]);
                     tempMaxHeap.deleteItem(tempMaxHeap.getHeap()[0]);
                     tempMaxHeap.heapifyByPrice();
                 }
             }
-            else 
+            else
             {
                 MinHeap<elemType> tempMinHeap;
                 tempMinHeap.setHeap(minHeap.getHeap());
@@ -908,17 +924,16 @@ public:
                     tempMinHeap.deleteItem(tempMinHeap.getHeap()[0]);
                     tempMinHeap.heapifyByPrice();
                 }
-            } 
+            }
 
             return SortedItems;
         }
-           
     }
 
     void displaySortedByNameAscending()
     {
         vector SortedItems = HeapSort(true, false);
-        for(auto item : SortedItems)
+        for (auto item : SortedItems)
         {
             item.display();
         }
@@ -926,7 +941,7 @@ public:
     void displaySortedByNameDescending()
     {
         vector SortedItems = HeapSort(false, false);
-        for(auto item : SortedItems)
+        for (auto item : SortedItems)
         {
             item.display();
         }
@@ -934,7 +949,7 @@ public:
     void displaySortedByPriceAscending()
     {
         vector SortedItems = HeapSort(true, true);
-        for(auto item : SortedItems)
+        for (auto item : SortedItems)
         {
             item.display();
         }
@@ -943,15 +958,15 @@ public:
     void displaySortedByPriceDescending()
     {
         vector SortedItems = HeapSort(false, true);
-        for(auto item : SortedItems)
+        for (auto item : SortedItems)
         {
             item.display();
         }
     }
 };
 //-----------------------------------------------------------mainfunctions-----------------------------------------------------------
-template <typename TreeType>
-void readItems(istream &file, TreeType &tree)
+template <typename TreeType, typename T, typename C>
+void readItems(istream &file, TreeType &bst, T &avl, C &heap)
 {
     int itemCount;
     file >> itemCount;
@@ -966,7 +981,231 @@ void readItems(istream &file, TreeType &tree)
         file >> price;
         file.ignore(numeric_limits<streamsize>::max(), '\n');
         Item item(name, category, price);
-        tree.insert(item);
+        bst.insert(item);
+        avl.insert(item);
+        heap.insert(item);
+    }
+}
+
+void displayMenu()
+{
+    cout << "Choose a tree structure:" << endl;
+    cout << "1. Binary Search Tree (BST)" << endl;
+    cout << "2. Heap" << endl;
+    cout << "3. AVL Tree" << endl;
+    cout << "4. Exit" << endl;
+}
+
+void bstMenu(BST<Item> &bst)
+{
+    int choice;
+    while (true)
+    {
+        cout << "BST Menu:" << endl;
+        cout << "1. Add item" << endl;
+        cout << "2. remove item" << endl;
+        cout << "3. Display items" << endl;
+        cout << "4. Display items sorted by name (ascending)" << endl;
+        cout << "5. Display items sorted by name (descending)" << endl;
+        cout << "6. Display items sorted by price (ascending)" << endl;
+        cout << "7. Display items sorted by price (descending)" << endl;
+        cout << "8. Back to main menu" << endl;
+        cin >> choice;
+
+        if (choice == 1)
+        {
+            string name, category;
+            int price;
+            cout << "Enter item name: " << endl;
+            cin >> name;
+            cout << "Enter item category: " << endl;
+            cin >> category;
+            cout << "Enter item price: " << endl;
+            cin >> price;
+            bst.insert(Item(name, category, price));
+        }
+        else if (choice == 2)
+        {
+            string name, category;
+            int price;
+            cout << "Enter item name: " << endl;
+            cin >> name;
+            cout << "Enter item category: " << endl;
+            cin >> category;
+            cout << "Enter item price: " << endl;
+            cin >> price;
+            bst.deleteitem(Item(name, category, price));
+        }
+        else if (choice == 3)
+        {
+            bst.Display();
+        }
+        else if (choice == 4)
+        {
+            bst.displaySortedByNameascending();
+        }
+        else if (choice == 5)
+        {
+            bst.displaySortedByNamedescending();
+        }
+        else if (choice == 6)
+        {
+            bst.displaySortedByPriceascending();
+        }
+        else if (choice == 7)
+        {
+            bst.displaySortedByPricedescending();
+        }
+        else if (choice == 8)
+        {
+            break;
+        }
+        else
+        {
+            cout << "Invalid choice, try again." << endl;
+        }
+    }
+}
+
+void heapMenu(Heap<Item> &heap)
+{
+    int choice;
+    while (true)
+    {
+        cout << "Heap Menu:" << endl;
+        cout << "1. Add item" << endl;
+        cout << "2. remove item" << endl;
+        cout << "3. Display items" << endl;
+        cout << "4. Display items sorted by name (ascending)" << endl;
+        cout << "5. Display items sorted by name (descending)" << endl;
+        cout << "6. Display items sorted by price (ascending)" << endl;
+        cout << "7. Display items sorted by price (descending)" << endl;
+        cout << "8. Back to main menu" << endl;
+        cin >> choice;
+
+        if (choice == 1)
+        {
+            string name, category;
+            int price;
+            cout << "Enter item name: " << endl;
+            cin >> name;
+            cout << "Enter item category: " << endl;
+            cin >> category;
+            cout << "Enter item price: " << endl;
+            cin >> price;
+            heap.insert(Item(name, category, price));
+        }
+        else if (choice == 2)
+        {
+            string name, category;
+            int price;
+            cout << "Enter item name: " << endl;
+            cin >> name;
+            cout << "Enter item category: " << endl;
+            cin >> category;
+            cout << "Enter item price: " << endl;
+            cin >> price;
+            heap.deleteItem(Item(name, category, price));
+        }
+        else if (choice == 3)
+        {
+            heap.display();
+        }
+        else if (choice == 4)
+        {
+            heap.displaySortedByNameAscending();
+        }
+        else if (choice == 5)
+        {
+            heap.displaySortedByNameDescending();
+        }
+        else if (choice == 6)
+        {
+            heap.displaySortedByPriceAscending();
+        }
+        else if (choice == 7)
+        {
+            heap.displaySortedByPriceDescending();
+        }
+        else if (choice == 8)
+        {
+            break;
+        }
+        else
+        {
+            cout << "Invalid choice, try again." << endl;
+        }
+    }
+}
+
+void avlMenu(AVL<Item> &avl)
+{
+    int choice;
+    while (true)
+    {
+        cout << "AVL Tree Menu:" << endl;
+        cout << "1. Add item" << endl;
+        cout << "2. remove item" << endl;
+        cout << "3. Display items" << endl;
+        cout << "4. Display items sorted by name (ascending)" << endl;
+        cout << "5. Display items sorted by name (descending)" << endl;
+        cout << "6. Display items sorted by price (ascending)" << endl;
+        cout << "7. Display items sorted by price (descending)" << endl;
+        cout << "8. Back to main menu" << endl;
+        cin >> choice;
+
+        if (choice == 1)
+        {
+            string name, category;
+            int price;
+            cout << "Enter item name: " << endl;
+            cin >> name;
+            cout << "Enter item category: " << endl;
+            cin >> category;
+            cout << "Enter item price: " << endl;
+            cin >> price;
+            avl.insert(Item(name, category, price));
+        }
+        else if (choice == 2)
+        {
+            string name, category;
+            int price;
+            cout << "Enter item name: " << endl;
+            cin >> name;
+            cout << "Enter item category: " << endl;
+            cin >> category;
+            cout << "Enter item price: " << endl;
+            cin >> price;
+            avl.deleteitem(Item(name, category, price));
+        }
+        else if (choice == 3)
+        {
+            avl.Display();
+        }
+        else if (choice == 4)
+        {
+            avl.displaySortedByNameascending();
+        }
+        else if (choice == 5)
+        {
+            avl.displaySortedByNamedescending();
+        }
+        else if (choice == 6)
+        {
+            avl.displaySortedByPriceascending();
+        }
+        else if (choice == 7)
+        {
+            avl.displaySortedByPricedescending();
+        }
+        else if (choice == 8)
+        {
+            break;
+        }
+        else
+        {
+            cout << "Invalid choice, try again." << endl;
+        }
     }
 }
 //---------------------------------------------------------------main----------------------------------------------------------------
@@ -975,121 +1214,48 @@ int main()
     ios::sync_with_stdio(false);
     cout.tie(nullptr);
     cin.tie(nullptr);
-    BST<Item> binarySearchTree;
-    AVL<Item> avltree;
-    Heap<Item> heapTree;
+    BST<Item> bst;
+    AVL<Item> avl;
+    Heap<Item> heap;
 
     ifstream file("items.txt");
     if (file.is_open())
     {
-        // readItems(file, avltree);
-        // readItems(file, binarySearchTree);
-        readItems(file, heapTree);
-
+        readItems(file,bst,avl,heap);
         file.close();
     }
     else
     {
         cerr << "Error opening file!" << "\n";
     }
-    ////////////////////////////////////////////////////////Test_BST///////////////////////////////////////////
-    // Item itemToSearch0 ("milkk","daidfsy",143);
-    // binarySearchTree.insert(itemToSearch0);
-    // binarySearchTree.deleteitem(itemToSearch0);
 
-    // Item itemToSearch1 ("omar","day",1343);
-    // binarySearchTree.insert(itemToSearch1);
-
-    // Item itemToSearch2 ("ADADSFS","dadasdiry",13323);
-    // binarySearchTree.insert(itemToSearch2);
-
-    // Item itemToSearch3 ("pepsi","drink",20);
-    // binarySearchTree.deleteitem(itemToSearch3);
-
-    // Item itemToSearch4 ("fdgdg","candy",2);
-    // binarySearchTree.insert(itemToSearch4);
-
-    // Item itemToSearch0 ("apples","fruit",66);
-    // binarySearchTree.insert(itemToSearch0);
-    // binarySearchTree.deleteitem(itemToSearch0);
-    // Item itemToSearch1 ("water","drink",9);
-    // binarySearchTree.deleteitem(itemToSearch1);
-    // Item itemToSearch2 ("mint gum","candy",2);
-    // binarySearchTree.deleteitem(itemToSearch2);
-
-    // cout << "Items in sorted order:" << endl;
-    // binarySearchTree.Display();
-    // cout << endl;
-
-    // cout << "Items sorted by name ac:" << endl;
-    // binarySearchTree.displaySortedByNameascending();
-    // cout << endl;
-
-    // cout << "Items sorted by price ac:" << endl;
-    // binarySearchTree.displaySortedByPriceascending();
-    // cout << endl;
-
-    // cout << "Items sorted by name de:" << endl;
-    // binarySearchTree.displaySortedByNamedescending();
-    // cout << endl;
-
-    // cout << "Items sorted by price de:" << endl;
-    // binarySearchTree.displaySortedByPricedescending();
-    // cout << endl;
-
-    ////////////////////////////////////////////////////////Test_AVL///////////////////////////////////////////
-    // Item itemToSearch5 ("milkk","daidfsy",143);
-    // Item itemToSearch6 ("mint gum","candy",2);
-    // Item itemToSearch1 ("omar","day",1343);
-    // Item itemToSearch2 ("ADADSFS","dadasdiry",13323);
-    // Item itemToSearch3 ("pepsi","drink",13);
-    // Item itemToSearch4 ("wfdsdf","candy",100);
-    // Item itemToSearch0 ("apples","fruit",66);
-    // Item itemToSearch6 ("waterr","drink",9);
-
-    // avltree.insert(itemToSearch5);
-    // avltree.insert(itemToSearch1);
-    // avltree.insert(itemToSearch2);
-    // avltree.insert(itemToSearch3);
-    // avltree.insert(itemToSearch0);
-    // avltree.deleteitem(itemToSearch0);
-    // avltree.deleteitem(itemToSearch6);
-    // avltree.deleteitem(itemToSearch4);
-
-    // cout << "Items in sorted order:" << endl;
-    // avltree.Display();
-    // cout << endl;
-
-    // cout << "Items sorted by name ac:" << endl;
-    // avltree.displaySortedByNameascending();
-    // cout << endl;
-
-    // cout << "Items sorted by price ac:" << endl;
-    // avltree.displaySortedByPriceascending();
-    // cout << endl;
-
-    // cout << "Items sorted by name de:" << endl;
-    // avltree.displaySortedByNamedescending();
-    // cout << endl;
-
-    // cout << "Items sorted by price de:" << endl;
-    // avltree.displaySortedByPricedescending();
-    // cout << endl;
-    ////////////////////////////////////////////////////////Test_Heap///////////////////////////////////////////
-
-    heapTree.display();
-    cout << '\n';
-    heapTree.display_maxHeap();
-    cout << '\n';
-    heapTree.display_minHeap();
-    cout << '\n';
-    heapTree.displaySortedByNameAscending();
-    cout << '\n';
-    heapTree.displaySortedByNameDescending();
-    cout << '\n';
-    heapTree.displaySortedByPriceAscending();
-    cout << '\n';
-    heapTree.displaySortedByPriceDescending();
+    int choice;
+    while (true)
+    {
+        displayMenu();
+        cin >> choice;
+        if (choice == 1)
+        {
+            bstMenu(bst);
+        }
+        else if (choice == 2)
+        {
+            heapMenu(heap);
+        }
+        else if (choice == 3)
+        {
+            avlMenu(avl);
+        }
+        else if (choice == 4)
+        {
+            break;
+        }
+        else
+        {
+            cout << "Invalid choice, try again." << endl;
+        }
+    }
 
     return 0;
+    
 }
