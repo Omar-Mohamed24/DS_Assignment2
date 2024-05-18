@@ -116,7 +116,7 @@ private:
 public:
     BST() : root(NULL) {}
     BSTNode<T> *getroot() const { return root; }
-/////////////////////helperfunc////////////////////////////
+    /////////////////////helperfunc////////////////////////////
     void inOrder(BSTNode<T> *node, vector<T> &items) const
     {
         if (node == nullptr)
@@ -134,7 +134,7 @@ public:
         preOrder(node->leftlink, items);  // Then traverse the left subtree
         preOrder(node->rightlink, items); // Finally traverse the right subtree
     }
-////////////////////////// insert///////////////////////////
+    ////////////////////////// insert///////////////////////////
     void insert(const T &insertItem)
     {
         BSTNode<T> *current, *prev, *newNode;
@@ -165,7 +165,7 @@ public:
                 prev->rightlink = newNode;
         }
     }
-/////////////////////////remove////////////////////////////////////////
+    /////////////////////////remove////////////////////////////////////////
     void deleteNode(BSTNode<T> *&node, const T &deleteItem)
     {
         BSTNode<T> *temp, *current, *prev;
@@ -222,7 +222,7 @@ public:
     {
         deleteNode(root, deleteItem);
     }
-/////////////////////////Display//////////////////////////
+    /////////////////////////Display//////////////////////////
     void Display() const
     {
         vector<T> items;
@@ -232,7 +232,7 @@ public:
             item.display();
         }
     }
-///////////////////Display sorted by their name ascending////////////////////////
+    ///////////////////Display sorted by their name ascending////////////////////////
     void displaySortedByNameascending() const
     {
         if (root == nullptr)
@@ -249,7 +249,7 @@ public:
             item.display();
         }
     }
-///////////////////Display sorted by their name descending////////////////////////
+    ///////////////////Display sorted by their name descending////////////////////////
     void displaySortedByNamedescending() const
     {
         if (root == nullptr)
@@ -266,7 +266,7 @@ public:
             item.display();
         }
     }
-///////////////////Display sorted by their prices ascending//////////////////////
+    ///////////////////Display sorted by their prices ascending//////////////////////
     void displaySortedByPriceascending() const
     {
         if (root == nullptr)
@@ -285,7 +285,7 @@ public:
             item.display();
         }
     }
-///////////////////Display sorted by their prices descending//////////////////////
+    ///////////////////Display sorted by their prices descending//////////////////////
     void displaySortedByPricedescending() const
     {
         if (root == nullptr)
@@ -309,12 +309,12 @@ public:
 template <class elemType>
 struct AVLNode
 {
-    elemType info;
-    int bfactor; // balance factor
-    AVLNode<elemType> *llink;
-    AVLNode<elemType> *rlink;
-    AVLNode() : info(elemType()), bfactor(0), llink(nullptr), rlink(nullptr) {}
-    AVLNode(const elemType &info) : info(info), bfactor(0), llink(nullptr), rlink(nullptr) {}
+    elemType value;
+    int bf, height; // balance factor and height of the node
+    AVLNode<elemType> *left;
+    AVLNode<elemType> *right;
+
+    AVLNode(const elemType &value) : value(value), bf(0), height(1), left(nullptr), right(nullptr) {}
 };
 //**********************************************************************************
 template <typename elemType>
@@ -327,299 +327,185 @@ public:
     AVL() : root(NULL) {}
 
     AVLNode<elemType> *getroot() const { return root; }
-/////////////////////helperfunc//////////////////////////////////////////////////
+
+    int getHeight(AVLNode<elemType> *node) const
+    {
+        return node ? node->height : 0;
+    }
+
+    int getBalanceFactor(AVLNode<elemType> *node) const
+    {
+        return node ? getHeight(node->right) - getHeight(node->left) : 0;
+    }
+
+    void updateHeightAndBalanceFactor(AVLNode<elemType> *node)
+    {
+        if (node)
+        {
+            node->height = 1 + max(getHeight(node->left), getHeight(node->right));
+            node->bf = getBalanceFactor(node);
+        }
+    }
+
+    /////////////////////helperfunc//////////////////////////////////////////////////
     void inOrder(AVLNode<elemType> *node, vector<elemType> &items) const
     {
         if (node == nullptr)
             return;
-        inOrder(node->llink, items);
-        items.push_back(node->info);
-        inOrder(node->rlink, items);
+        inOrder(node->left, items);
+        items.push_back(node->value);
+        inOrder(node->right, items);
     }
 
     void preOrder(AVLNode<elemType> *node, vector<elemType> &items) const
     {
         if (node == nullptr)
             return;
-        items.push_back(node->info);
-        preOrder(node->llink, items);
-        preOrder(node->rlink, items);
+        items.push_back(node->value);
+        preOrder(node->left, items);
+        preOrder(node->right, items);
     }
 
-    void rotateToLeft(AVLNode<elemType>* &root)
+    // Re-balance a node if its balance factor is +2 or -2.
+    AVLNode<elemType> *balance(AVLNode<elemType> *node)
     {
-        AVLNode<elemType> *p; 
-        if (root == NULL)
-            cerr << "Error in the tree" << endl;
-        else if (root->rlink == NULL)
-            cerr << "Error in the tree:"
-                <<" No right subtree to rotate." << endl;
-        else
-        {
-            p = root->rlink;
-            root->rlink = p->llink; 
-            p->llink = root;
-            root = p; 
-        }
-    }
+        updateHeightAndBalanceFactor(node);
+        int balanceFactor = node->bf;
 
-    void rotateToRight(AVLNode<elemType>* &root)
-    {
-        AVLNode<elemType> *p;
-        if (root == NULL)
-            cerr << "Error in the tree" << endl;
-        else if (root->llink == NULL)
-            cerr << "Error in the tree:"
-            << " No left subtree to rotate." << endl;
-        else
+        if (balanceFactor > 1)
         {
-            p = root->llink;
-            root->llink = p->rlink;
-            p->rlink = root;
-            root = p; 
-        }
-    }
-
-    void balanceFromLeft(AVLNode<elemType>* &root)
-    {
-        AVLNode<elemType> *p;
-        AVLNode<elemType> *w;
-        p = root->llink; //p points to the left subtree of root
-        switch (p->bfactor)
-        {
-            case -1:
-                root->bfactor = 0;
-                p->bfactor = 0;
-                rotateToRight(root);
-                break;
-            case 0:
-                cerr << "Error: Cannot balance from the left." << endl;
-                break;
-            case 1:
-                w = p->rlink;
-                switch (w->bfactor) 
-                {
-                    case -1:
-                        root->bfactor = 1;
-                        p->bfactor = 0;
-                        break;
-                    case 0:
-                        root->bfactor = 0;
-                        p->bfactor = 0;
-                        break;
-                    case 1:
-                        root->bfactor = 0;
-                        p->bfactor = -1;
-                }
-                w->bfactor = 0;
-                rotateToLeft(p);
-                root->llink = p;
-                rotateToRight(root);
-        }
-    }
-
-    void balanceFromRight(AVLNode<elemType>* &root)
-    {
-        AVLNode<elemType> *p;
-        AVLNode<elemType> *w;
-        p = root->rlink; 
-        switch (p->bfactor)
-        {
-            case -1:
-                w = p->llink;
-                switch (w->bfactor)
-                {
-                case -1:
-                    root->bfactor = 0;
-                    p->bfactor = 1;
-                    break;
-                case 0:
-                    root->bfactor = 0;
-                    p->bfactor = 0;
-                    break;
-                case 1:
-                    root->bfactor = -1;
-                    p->bfactor = 0;
-                }
-                w->bfactor = 0;
-                rotateToRight(p);
-                root->rlink = p;
-                rotateToLeft(root);
-                break;
-            case 0:
-                cerr << "Error: Cannot balance from the left." << endl;
-                break;
-            case 1:
-                root->bfactor = 0;
-                p->bfactor = 0;
-                rotateToLeft(root);
-        }
-    }
-////////////////////////// insert/////////////////////////////////////////////////
-    void insertIntoAVL(AVLNode<elemType>* &root,AVLNode<elemType> *newNode, bool& isTaller)
-    {
-        if (root == NULL)
-        {
-            root = newNode;
-            isTaller = true;
-        }
-        else if (root->info == newNode->info)
-            cerr << "No duplicates are allowed." << endl;
-        else if (root->info > newNode->info)
-        {
-            insertIntoAVL(root->llink, newNode, isTaller);
-            if (isTaller)
-                switch (root->bfactor)
-                {
-                    case -1:
-                        balanceFromLeft(root);
-                        isTaller = false;
-                        break;
-                    case 0:
-                        root->bfactor = -1;
-                        isTaller = true;
-                        break;
-                    case 1:
-                        root->bfactor = 0;
-                        isTaller = false;
-                }
-        }
-        else
-        {
-            insertIntoAVL(root->rlink, newNode, isTaller);
-            if (isTaller)
-                switch (root->bfactor)
-                {
-                    case -1:
-                        root->bfactor = 0;
-                        isTaller = false;
-                        break;
-                    case 0:
-                        root->bfactor = 1;
-                        isTaller = true;
-                        break;
-                    case 1:
-                        balanceFromRight(root);
-                        isTaller = false;
-                }
-        }
-    }
-
-    void insert(const elemType &newItem)
-    {
-        bool isTaller = false;
-        AVLNode<elemType> *newNode;
-        newNode = new AVLNode<elemType>(newItem);
-        
-        insertIntoAVL(root, newNode, isTaller);
-    }
-/////////////////////////remove///////////////////////////////////////////////////
-    void deleteNode(AVLNode<elemType> *&root, const elemType &key, bool &isShorter)
-    {
-        if (root == nullptr)
-        {
-            isShorter = false;
-            return;
-        }
-
-        if (key < root->info)
-        {
-            deleteNode(root->llink, key, isShorter);
-            if (isShorter)
+            if (node->right->bf < 0)
             {
-                switch (root->bfactor)
-                {
-                    case -1:
-                        root->bfactor = 0;
-                        isShorter = true;
-                        break;
-                    case 0:
-                        root->bfactor = 1;
-                        isShorter = false;
-                        break;
-                    case 1:
-                        balanceFromRight(root);
-                        isShorter = (root->bfactor == 0);
-                        break;
-                }
+                node->right = rightRotation(node->right);
             }
+            return leftRotation(node);
         }
-        else if (key > root->info)
+        if (balanceFactor < -1)
         {
-            deleteNode(root->rlink, key, isShorter);
-            if (isShorter)
+            if (node->left->bf > 0)
             {
-                switch (root->bfactor)
-                {
-                    case 1:
-                        root->bfactor = 0;
-                        isShorter = true;
-                        break;
-                    case 0:
-                        root->bfactor = -1;
-                        isShorter = false;
-                        break;
-                    case -1:
-                        balanceFromLeft(root);
-                        isShorter = (root->bfactor == 0);
-                        break;
-                }
+                node->left = leftRotation(node->left);
             }
+            return rightRotation(node);
+        }
+        return node;
+    }
+
+    AVLNode<elemType> *leftRotation(AVLNode<elemType> *node)
+    {
+        AVLNode<elemType> *newRoot = node->right;
+        node->right = newRoot->left;
+        newRoot->left = node;
+        updateHeightAndBalanceFactor(node);
+        updateHeightAndBalanceFactor(newRoot);
+        return newRoot;
+    }
+
+    AVLNode<elemType> *rightRotation(AVLNode<elemType> *node)
+    {
+        AVLNode<elemType> *newRoot = node->left;
+        node->left = newRoot->right;
+        newRoot->right = node;
+        updateHeightAndBalanceFactor(node);
+        updateHeightAndBalanceFactor(newRoot);
+        return newRoot;
+    }
+
+    // Helper method to find the leftmost node (which has the smallest value)
+    elemType findMin(AVLNode<elemType> *node) const
+    {
+        while (node->left != nullptr)
+            node = node->left;
+        return node->value;
+    }
+
+    // Helper method to find the rightmost node (which has the largest value)
+    elemType findMax(AVLNode<elemType> *node) const
+    {
+        while (node->right != nullptr)
+            node = node->right;
+        return node->value;
+    }
+
+    ////////////////////////// insert/////////////////////////////////////////////////
+    AVLNode<elemType> *insertNode(AVLNode<elemType> *node, const elemType &value)
+    {
+        // Base case.
+        if (node == nullptr)
+            return new AVLNode<elemType>(value);
+
+        // Insert node in left subtree.
+        if (value < node->value)
+        {
+            node->left = insertNode(node->left, value);
+        }
+        // Insert node in right subtree.
+        else if (value > node->value)
+        {
+            node->right = insertNode(node->right, value);
+        }
+        // Duplicate values are not allowed
+        else
+        {
+            cout << "The insert item is already in the list-";
+            cout << "duplicates are not allowed.";
+            value.display();
+            return node;
+        }
+
+        // Re-balance tree.
+        return balance(node);
+    }
+
+    void insert(const elemType &value)
+    {
+        root = insertNode(root, value);
+    }
+    /////////////////////////remove///////////////////////////////////////////////////
+    AVLNode<elemType> *deleteNode(AVLNode<elemType> *node, const elemType &deleteItem)
+    {
+        if (node == nullptr)
+        {
+            return nullptr;
+        }
+
+        if (deleteItem < node->value)
+        {
+            node->left = deleteNode(node->left, deleteItem);
+        }
+        else if (deleteItem > node->value)
+        {
+            node->right = deleteNode(node->right, deleteItem);
         }
         else
         {
-            if ((root->llink == nullptr) || (root->rlink == nullptr))
+            if (node->left == nullptr)
             {
-                AVLNode<elemType> *temp = root->llink ? root->llink : root->rlink;
-
-                if (temp == nullptr)
-                {
-                    temp = root;
-                    root = nullptr;
-                }
-                else
-                    *root = *temp;
-
-                delete temp;
-                isShorter = true;
+                AVLNode<elemType> *temp = node->right;
+                delete node;
+                return temp;
+            }
+            else if (node->right == nullptr)
+            {
+                AVLNode<elemType> *temp = node->left;
+                delete node;
+                return temp;
             }
             else
             {
-                AVLNode<elemType> *current = root->rlink;
-                while (current->llink != nullptr)
-                    current = current->llink;
-
-                root->info = current->info;
-                deleteNode(root->rlink, current->info, isShorter);
-
-                if (isShorter)
-                {
-                    switch (root->bfactor)
-                    {
-                        case 1:
-                            root->bfactor = 0;
-                            isShorter = true;
-                            break;
-                        case 0:
-                            root->bfactor = -1;
-                            isShorter = false;
-                            break;
-                        case -1:
-                            balanceFromLeft(root);
-                            isShorter = (root->bfactor == 0);
-                            break;
-                    }
-                }
+                elemType minValue = findMin(node->right);
+                node->value = minValue;
+                node->right = deleteNode(node->right, minValue);
             }
         }
+        return balance(node);
     }
 
-    void deleteitem(const elemType &deleteItem)
+    void deleteitem(const elemType &value)
     {
-        bool isShorter = false;
-        deleteNode(root, deleteItem, isShorter);
+        root = deleteNode(root, value);
     }
-/////////////////////////Display//////////////////////////////////////////////////
+    /////////////////////////Display//////////////////////////////////////////////////
     void Display() const
     {
         vector<elemType> items;
@@ -629,7 +515,7 @@ public:
             item.display();
         }
     }
-///////////////////Display sorted by their name ascending/////////////////////////
+    ///////////////////Display sorted by their name ascending/////////////////////////
     void displaySortedByNameascending() const
     {
         if (root == nullptr)
@@ -646,7 +532,7 @@ public:
             item.display();
         }
     }
-///////////////////Display sorted by their name descending////////////////////////
+    ///////////////////Display sorted by their name descending////////////////////////
     void displaySortedByNamedescending() const
     {
         if (root == nullptr)
@@ -663,7 +549,7 @@ public:
             item.display();
         }
     }
-///////////////////Display sorted by their prices ascending///////////////////////
+    ///////////////////Display sorted by their prices ascending///////////////////////
     void displaySortedByPriceascending() const
     {
         if (root == nullptr)
@@ -682,7 +568,7 @@ public:
             item.display();
         }
     }
-///////////////////Display sorted by their prices descending//////////////////////
+    ///////////////////Display sorted by their prices descending//////////////////////
     void displaySortedByPricedescending() const
     {
         if (root == nullptr)
@@ -730,26 +616,25 @@ int main()
     ios::sync_with_stdio(false);
     cout.tie(nullptr);
     cin.tie(nullptr);
-    // BST<Item> binarySearchTree;
-    // AVL<Item> avltree;
+    BST<Item> binarySearchTree;
+    AVL<Item> avltree;
 
     ifstream file("items.txt");
     if (file.is_open())
     {
         // readItems(file, avltree);
         // readItems(file, binarySearchTree);
-        
+
         file.close();
     }
     else
     {
         cerr << "Error opening file!" << "\n";
     }
-////////////////////////////////////////////////////////Test_BST///////////////////////////////////////////
+    ////////////////////////////////////////////////////////Test_BST///////////////////////////////////////////
     // Item itemToSearch0 ("milkk","daidfsy",143);
     // binarySearchTree.insert(itemToSearch0);
     // binarySearchTree.deleteitem(itemToSearch0);
-    
 
     // Item itemToSearch1 ("omar","day",1343);
     // binarySearchTree.insert(itemToSearch1);
@@ -764,6 +649,7 @@ int main()
     // binarySearchTree.insert(itemToSearch4);
 
     // Item itemToSearch0 ("apples","fruit",66);
+    // binarySearchTree.insert(itemToSearch0);
     // binarySearchTree.deleteitem(itemToSearch0);
     // Item itemToSearch1 ("water","drink",9);
     // binarySearchTree.deleteitem(itemToSearch1);
@@ -790,13 +676,13 @@ int main()
     // binarySearchTree.displaySortedByPricedescending();
     // cout << endl;
 
-////////////////////////////////////////////////////////Test_AVL///////////////////////////////////////////
+    ////////////////////////////////////////////////////////Test_AVL///////////////////////////////////////////
     // Item itemToSearch5 ("milkk","daidfsy",143);
     // Item itemToSearch6 ("mint gum","candy",2);
     // Item itemToSearch1 ("omar","day",1343);
     // Item itemToSearch2 ("ADADSFS","dadasdiry",13323);
     // Item itemToSearch3 ("pepsi","drink",13);
-    // Item itemToSearch4 ("wfdsdf","candy",2);
+    // Item itemToSearch4 ("wfdsdf","candy",100);
     // Item itemToSearch0 ("apples","fruit",66);
     // Item itemToSearch6 ("waterr","drink",9);
 
@@ -804,7 +690,7 @@ int main()
     // avltree.insert(itemToSearch1);
     // avltree.insert(itemToSearch2);
     // avltree.insert(itemToSearch3);
-    // avltree.insert(itemToSearch4);
+    // avltree.insert(itemToSearch0);
     // avltree.deleteitem(itemToSearch0);
     // avltree.deleteitem(itemToSearch6);
     // avltree.deleteitem(itemToSearch4);
@@ -828,8 +714,7 @@ int main()
     // cout << "Items sorted by price de:" << endl;
     // avltree.displaySortedByPricedescending();
     // cout << endl;
-////////////////////////////////////////////////////////Test_Heap///////////////////////////////////////////
-        
+    ////////////////////////////////////////////////////////Test_Heap///////////////////////////////////////////
 
     return 0;
 }
