@@ -589,7 +589,273 @@ public:
     }
 };
 //---------------------------------------------------------Heaps_Implementation------------------------------------------------------
+template <typename elemType>
+class MaxHeap
+{
+private:
+    vector <elemType> heap;
+public:    
+    MaxHeap() {}
 
+    void heapify()
+    {
+        int size = heap.size();
+        for(int i = size / 2 - 1; i >= 0; i--)
+        {
+            int lchild = 2 * i + 1;
+            int rchild = 2 * i + 2;
+            int parent = i;
+
+            if(lchild < size &&  heap[lchild] > heap[parent])
+            {
+                parent = lchild;
+            }
+
+            if(rchild < size && heap[rchild] > heap[parent])
+            {
+                parent = rchild;
+            }
+
+            if(parent != i)
+            {
+                swap(heap[i], heap[parent]);
+            }
+        } 
+    }
+
+    vector <elemType> getHeap()
+    {
+        return heap;
+    }
+
+    void setHeap(const vector<elemType>& items)
+    {
+        heap = items;
+        heapify();
+    }
+
+    void insert (const elemType& item)
+    {
+        heap.push_back(item);
+        heapify();
+    }
+
+    void deleteItem (const elemType& item)
+    {
+        auto del = find(heap.begin(), heap.end(), item);
+        if(del == heap.end()) {cout << "Element Not Found in Heap." << endl; return; }
+        else 
+        {
+            auto index = distance(heap.begin(), del);
+            swap(heap[index], heap.back());
+            heap.pop_back();
+            heapify();
+        } 
+    }
+
+    void display() const
+    {
+        if(heap.size() == 0) cout << "Empty Heap" << endl;
+        else 
+        {
+            for(const auto& item : heap)
+            {
+                item.display();
+            }
+            cout << endl;
+        }
+    }
+};
+
+template <typename elemType>
+class MinHeap
+{
+private:
+    vector <elemType> heap;
+public:    
+    MinHeap() {}
+
+    void heapify()
+    {
+        int size = heap.size();
+        for(int i = size / 2 - 1; i >= 0; i--)
+        {
+            int lchild = 2 * i + 1;
+            int rchild = 2 * i + 2;
+            int parent = i;
+
+            if(lchild < size &&  heap[lchild] < heap[parent])
+            {
+                parent = lchild;
+            }
+
+            if(rchild < size && heap[rchild] < heap[parent])
+            {
+                parent = rchild;
+            }
+
+            if(parent != i)
+            {
+                swap(heap[i], heap[parent]);
+            }
+        } 
+    }
+
+    vector <elemType> getHeap()
+    {
+        return heap;
+    }    
+
+    void setHeap(const vector<elemType>& items)
+    {
+        heap = items;
+        heapify();
+    }
+
+    void insert (const elemType& item)
+    {
+        heap.push_back(item);
+        heapify();
+    }
+
+    void deleteItem (const elemType& item)
+    {
+        auto del = find(heap.begin(), heap.end(), item);
+        if(del == heap.end()) {cout << "Element Not Found in Heap." << endl; return; }
+        else 
+        {
+            auto index = distance(heap.begin(), del);
+            swap(heap[index], heap.back());
+            heap.pop_back();
+            heapify();
+        } 
+    }
+
+    void display() const
+    {
+        if(heap.size() == 0) cout << "Empty Heap" << endl;
+        else 
+        {
+            for(const auto& item : heap)
+            {
+                item.display();
+            }
+            cout << endl;
+        }
+    }
+};
+
+template <typename elemType>
+class Heap
+{
+private:
+    vector <elemType> items;
+    MaxHeap <elemType> maxHeap;
+    MinHeap <elemType> minHeap;
+public:
+
+    Heap() {}
+
+
+    void insert (const elemType& item)
+    {
+        items.push_back(item);
+        maxHeap.insert(item);
+        minHeap.insert(item);
+    }
+
+    void deleteItem (const elemType& item)
+    {
+        auto del = find(items.begin(), items.end(), item);
+        if(del == items.end()) {cout << "Element Not Found in Heap." << endl; return; }
+        else 
+        {
+            auto index = distance(items.begin(), del);    
+
+            items.erase(del);
+            maxHeap.deleteItem(item);
+            minHeap.deleteItem(item);
+        } 
+    }
+
+    void display() const
+    {
+        if(items.size() == 0) cout << "Empty Heap" << endl;
+        else 
+        {
+            for(const auto& item : items)
+            {
+                item.display();
+            }
+            cout << endl;
+        }
+    }
+
+    void display_maxHeap () const
+    {
+        maxHeap.display();
+    }
+
+    void display_minHeap () const
+    {
+        minHeap.display();
+    }
+
+    vector <elemType> HeapSort(bool ASC)
+    {
+        vector <elemType> SortedItems;
+        if(!ASC)
+        {
+            MaxHeap <elemType> tempMaxHeap;
+            tempMaxHeap.setHeap(maxHeap.getHeap());
+            
+            while(!tempMaxHeap.getHeap().empty())
+            {
+                SortedItems.push_back(tempMaxHeap.getHeap()[0]);
+                tempMaxHeap.deleteItem(tempMaxHeap.getHeap()[0]);
+            }
+        }
+        else 
+        {
+            MinHeap<elemType> tempMinHeap;
+            tempMinHeap.setHeap(minHeap.getHeap());
+
+            while (!tempMinHeap.getHeap().empty())
+            {
+                SortedItems.push_back(tempMinHeap.getHeap()[0]);
+                tempMinHeap.deleteItem(tempMinHeap.getHeap()[0]);
+            }
+        } 
+
+        return SortedItems;   
+    }
+
+    void displaySortedByNameAscending()
+    {
+        vector SortedItems = HeapSort(true);
+        for(auto item : SortedItems)
+        {
+            item.display();
+        }
+    }
+    void displaySortedByNameDescending()
+    {
+        vector SortedItems = HeapSort(false);
+        for(auto item : SortedItems)
+        {
+            item.display();
+        }
+    }
+    void displaySortedByPriceAscending()
+    {
+
+    }
+
+    void displaySortedByPriceDescending()
+    {
+        
+    }
+};
 //-----------------------------------------------------------mainfunctions-----------------------------------------------------------
 template <typename TreeType>
 void readItems(istream &file, TreeType &tree)
