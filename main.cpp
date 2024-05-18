@@ -28,6 +28,9 @@ public:
     string get_category() const;
     int get_price() const;
 
+    // Compare methods
+    bool compareByPrice(const Item &I1, const Item &I2);
+
     // Display method
     void display(ostream &os) const;
     void display() const;
@@ -94,6 +97,10 @@ bool operator==(const Item &I1, const Item &I2)
     return I1.itemName == I2.itemName && I1.category == I2.category && I1.price == I2.price;
 }
 
+bool compareByPrice(const Item &I1, const Item &I2)
+{
+    return I1.get_price() > I2.get_price();
+}
 //---------------------------------------------------------BST_Implementation--------------------------------------------------------
 template <typename T>
 struct BSTNode
@@ -623,6 +630,32 @@ public:
         } 
     }
 
+    void heapifyByPrice()
+    {
+        int size = heap.size();
+        for(int i = size / 2 - 1; i >= 0; i--)
+        {
+            int lchild = 2 * i + 1;
+            int rchild = 2 * i + 2;
+            int parent = i;
+
+            if(lchild < size &&  compareByPrice(heap[lchild],heap[parent]))
+            {
+                parent = lchild;
+            }
+
+            if(rchild < size && compareByPrice(heap[rchild],heap[parent]))
+            {
+                parent = rchild;
+            }
+
+            if(parent != i)
+            {
+                swap(heap[i], heap[parent]);
+            }
+        }
+    }
+
     vector <elemType> getHeap()
     {
         return heap;
@@ -699,6 +732,32 @@ public:
                 swap(heap[i], heap[parent]);
             }
         } 
+    }
+
+    void heapifyByPrice()
+    {
+        int size = heap.size();
+        for(int i = size / 2 - 1; i >= 0; i--)
+        {
+            int lchild = 2 * i + 1;
+            int rchild = 2 * i + 2;
+            int parent = i;
+
+            if(lchild < size &&  !compareByPrice(heap[lchild],heap[parent]))
+            {
+                parent = lchild;
+            }
+
+            if(rchild < size && !compareByPrice(heap[rchild],heap[parent]))
+            {
+                parent = rchild;
+            }
+
+            if(parent != i)
+            {
+                swap(heap[i], heap[parent]);
+            }
+        }
     }
 
     vector <elemType> getHeap()
@@ -791,48 +850,74 @@ public:
         }
     }
 
-    void display_maxHeap () const
+    vector <elemType> HeapSort(bool ASC, bool ByPrice)
     {
-        maxHeap.display();
-    }
-
-    void display_minHeap () const
-    {
-        minHeap.display();
-    }
-
-    vector <elemType> HeapSort(bool ASC)
-    {
-        vector <elemType> SortedItems;
-        if(!ASC)
+        if(!ByPrice)
         {
-            MaxHeap <elemType> tempMaxHeap;
-            tempMaxHeap.setHeap(maxHeap.getHeap());
-            
-            while(!tempMaxHeap.getHeap().empty())
+            vector <elemType> SortedItems;
+            if(!ASC)
             {
-                SortedItems.push_back(tempMaxHeap.getHeap()[0]);
-                tempMaxHeap.deleteItem(tempMaxHeap.getHeap()[0]);
+                MaxHeap <elemType> tempMaxHeap;
+                tempMaxHeap.setHeap(maxHeap.getHeap());
+                
+                while(!tempMaxHeap.getHeap().empty())
+                {
+                    SortedItems.push_back(tempMaxHeap.getHeap()[0]);
+                    tempMaxHeap.deleteItem(tempMaxHeap.getHeap()[0]);
+                }
             }
+            else 
+            {
+                MinHeap<elemType> tempMinHeap;
+                tempMinHeap.setHeap(minHeap.getHeap());
+
+                while (!tempMinHeap.getHeap().empty())
+                {
+                    SortedItems.push_back(tempMinHeap.getHeap()[0]);
+                    tempMinHeap.deleteItem(tempMinHeap.getHeap()[0]);
+                }
+            } 
+
+            return SortedItems;
         }
         else 
         {
-            MinHeap<elemType> tempMinHeap;
-            tempMinHeap.setHeap(minHeap.getHeap());
-
-            while (!tempMinHeap.getHeap().empty())
+            vector <elemType> SortedItems;
+            if(!ASC)
             {
-                SortedItems.push_back(tempMinHeap.getHeap()[0]);
-                tempMinHeap.deleteItem(tempMinHeap.getHeap()[0]);
+                MaxHeap <elemType> tempMaxHeap;
+                tempMaxHeap.setHeap(maxHeap.getHeap());
+                tempMaxHeap.heapifyByPrice();
+                
+                while(!tempMaxHeap.getHeap().empty())
+                {
+                    SortedItems.push_back(tempMaxHeap.getHeap()[0]);
+                    tempMaxHeap.deleteItem(tempMaxHeap.getHeap()[0]);
+                    tempMaxHeap.heapifyByPrice();
+                }
             }
-        } 
+            else 
+            {
+                MinHeap<elemType> tempMinHeap;
+                tempMinHeap.setHeap(minHeap.getHeap());
+                tempMinHeap.heapifyByPrice();
 
-        return SortedItems;   
+                while (!tempMinHeap.getHeap().empty())
+                {
+                    SortedItems.push_back(tempMinHeap.getHeap()[0]);
+                    tempMinHeap.deleteItem(tempMinHeap.getHeap()[0]);
+                    tempMinHeap.heapifyByPrice();
+                }
+            } 
+
+            return SortedItems;
+        }
+           
     }
 
     void displaySortedByNameAscending()
     {
-        vector SortedItems = HeapSort(true);
+        vector SortedItems = HeapSort(true, false);
         for(auto item : SortedItems)
         {
             item.display();
@@ -840,7 +925,7 @@ public:
     }
     void displaySortedByNameDescending()
     {
-        vector SortedItems = HeapSort(false);
+        vector SortedItems = HeapSort(false, false);
         for(auto item : SortedItems)
         {
             item.display();
@@ -848,12 +933,20 @@ public:
     }
     void displaySortedByPriceAscending()
     {
-
+        vector SortedItems = HeapSort(true, true);
+        for(auto item : SortedItems)
+        {
+            item.display();
+        }
     }
 
     void displaySortedByPriceDescending()
     {
-        
+        vector SortedItems = HeapSort(false, true);
+        for(auto item : SortedItems)
+        {
+            item.display();
+        }
     }
 };
 //-----------------------------------------------------------mainfunctions-----------------------------------------------------------
@@ -884,12 +977,14 @@ int main()
     cin.tie(nullptr);
     BST<Item> binarySearchTree;
     AVL<Item> avltree;
+    Heap<Item> heapTree;
 
     ifstream file("items.txt");
     if (file.is_open())
     {
         // readItems(file, avltree);
         // readItems(file, binarySearchTree);
+        readItems(file, heapTree);
 
         file.close();
     }
@@ -981,6 +1076,20 @@ int main()
     // avltree.displaySortedByPricedescending();
     // cout << endl;
     ////////////////////////////////////////////////////////Test_Heap///////////////////////////////////////////
+
+    heapTree.display();
+    cout << '\n';
+    heapTree.display_maxHeap();
+    cout << '\n';
+    heapTree.display_minHeap();
+    cout << '\n';
+    heapTree.displaySortedByNameAscending();
+    cout << '\n';
+    heapTree.displaySortedByNameDescending();
+    cout << '\n';
+    heapTree.displaySortedByPriceAscending();
+    cout << '\n';
+    heapTree.displaySortedByPriceDescending();
 
     return 0;
 }
